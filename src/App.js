@@ -12,6 +12,8 @@ const stages = [
   {id: 3, name: "end"},
 ]
 
+const guessesQty = 3
+
 function App() {
 const [ gameStage, setGameStage] = useState(stages[0].name);
 const [words] = useState(wordsList);
@@ -22,7 +24,7 @@ const [letters, setLetters] = useState([]);
 
 const [guessedLetters, setGuessedLetters] = useState([]);
 const [wrongLetters, setWrongLetters] = useState([]);
-const [guesses, setGuesses] = useState(3);
+const [guesses, setGuesses] = useState(guessesQty);
 const [ score, setScore] = useState(0);
 
 
@@ -54,8 +56,21 @@ const startGame = () =>{
   wordLetters = wordLetters.map((l) => l.toLowerCase());
 
 
-  console.log(word, category);
-  console.log(wordLetters);
+  const clearLetterStates = () => {
+    setGuessedLetters([]);
+    setWrongLetters([]);
+  };
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect( () => {
+    if(guesses <= 0){
+
+      //resset all states
+
+      clearLetterStates()
+      setGameStage(stages[2].name)
+    }
+  },[guesses])
 
   // fill states
   setPickedWord(word);
@@ -87,7 +102,9 @@ const verifyLetter = (letter) =>{
     setWrongLetters((actualWrongLetters) => [
       ...actualWrongLetters,
       normalizedLetter
-    ])
+    ]);
+
+    setGuesses((actualGuesses)=> actualGuesses - 1);
   }
 
   
@@ -99,6 +116,10 @@ console.log(wrongLetters);
 
 //restarts the game
 const retry = () =>{
+
+  setScore(0);
+  setGuesses(guessesQty);
+
   setGameStage(stages[0].name);
 }
 
